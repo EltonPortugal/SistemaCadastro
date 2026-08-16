@@ -1,0 +1,49 @@
+@using CadastroFuncionarios.Models
+@model Funcionario
+
+@{
+    ViewData["Title"] = "Detalhes do funcionário";
+}
+
+<h1>@Model.Nome</h1>
+<h6 class="text-muted">@Model.Cargo</h6>
+
+<dl class="row mt-3">
+    <dt class="col-sm-3">E-mail</dt>
+    <dd class="col-sm-9">@Model.Email</dd>
+
+    <dt class="col-sm-3">Data de contratação</dt>
+    <dd class="col-sm-9">@Model.DataContratacao.ToString("dd/MM/yyyy")</dd>
+
+    <dt class="col-sm-3">Salário base</dt>
+    <dd class="col-sm-9">@Model.SalarioBase.ToString("C")</dd>
+
+    @* Bloco de campos específicos por subclasse, via pattern matching (mesma ideia usada no Controller). *@
+    @switch (Model)
+    {
+        case Gerente gerente:
+            <dt class="col-sm-3">Bônus</dt>
+            <dd class="col-sm-9">@gerente.Bonus.ToString("C")</dd>
+            <dt class="col-sm-3">Tamanho da equipe</dt>
+            <dd class="col-sm-9">@gerente.TamanhoEquipe pessoa(s)</dd>
+            break;
+        case Desenvolvedor dev:
+            <dt class="col-sm-3">Senioridade</dt>
+            <dd class="col-sm-9">@dev.NivelSenioridade</dd>
+            <dt class="col-sm-3">Certificações</dt>
+            <dd class="col-sm-9">@dev.CertificacoesQtd</dd>
+            break;
+        case Estagiario estagiario:
+            <dt class="col-sm-3">Instituição de ensino</dt>
+            <dd class="col-sm-9">@estagiario.Instituicao</dd>
+            <dt class="col-sm-3">Auxílio transporte</dt>
+            <dd class="col-sm-9">@estagiario.AuxilioTransporte.ToString("C")</dd>
+            break;
+    }
+
+    <dt class="col-sm-3">Salário total</dt>
+    <dd class="col-sm-9 fw-bold">@Model.CalcularSalarioTotal().ToString("C")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
+<a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>

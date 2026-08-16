@@ -1,0 +1,16 @@
+@using CadastroFuncionarios.ViewModels
+@model FuncionarioFormViewModel
+
+@{
+    ViewData["Title"] = "Novo funcionário";
+}
+
+<h1>Novo funcionário</h1>
+
+<form asp-action="Create" method="post">
+    @await Html.PartialAsync("_Form", Model)
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

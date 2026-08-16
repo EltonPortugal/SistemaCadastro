@@ -1,0 +1,55 @@
+@using CadastroFuncionarios.Models
+@model IEnumerable<Funcionario>
+
+@{
+    ViewData["Title"] = "Funcionários";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Funcionários</h1>
+    <a asp-action="Create" class="btn btn-primary">+ Novo funcionário</a>
+</div>
+
+@if (TempData["Mensagem"] is string mensagem)
+{
+    <div class="alert alert-success">@mensagem</div>
+}
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Cargo</th>
+            <th>E-mail</th>
+            <th>Contratação</th>
+            <th class="text-end">Salário base</th>
+            <th class="text-end">Salário total</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var funcionario in Model)
+    {
+        <tr>
+            <td>@funcionario.Nome</td>
+            @* Cargo e CalcularSalarioTotal() são polimórficos: cada linha chama a versão
+               correta do método/propriedade de acordo com o tipo concreto do funcionário. *@
+            <td><span class="badge bg-secondary">@funcionario.Cargo</span></td>
+            <td>@funcionario.Email</td>
+            <td>@funcionario.DataContratacao.ToString("dd/MM/yyyy")</td>
+            <td class="text-end">@funcionario.SalarioBase.ToString("C")</td>
+            <td class="text-end fw-bold">@funcionario.CalcularSalarioTotal().ToString("C")</td>
+            <td class="text-end">
+                <a asp-action="Details" asp-route-id="@funcionario.Id" class="btn btn-sm btn-outline-secondary">Detalhes</a>
+                <a asp-action="Edit" asp-route-id="@funcionario.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                <a asp-action="Delete" asp-route-id="@funcionario.Id" class="btn btn-sm btn-outline-danger">Excluir</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Nenhum funcionário cadastrado ainda.</p>
+}

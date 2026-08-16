@@ -1,0 +1,130 @@
+@using CadastroFuncionarios.Models
+@using CadastroFuncionarios.ViewModels
+@model FuncionarioFormViewModel
+
+@{
+    var edicao = Model.Id != 0;
+}
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+@if (Model.Id != 0)
+{
+    <input type="hidden" asp-for="Id" />
+}
+
+<div class="mb-3">
+    <label asp-for="Tipo" class="form-label"></label>
+    @if (edicao)
+    {
+        @* O <select> desabilitado não é enviado no POST, então o valor real vai pelo campo oculto abaixo. *@
+        <select asp-for="Tipo" class="form-select" id="tipoSelect" asp-items="Html.GetEnumSelectList<TipoFuncionario>()" disabled></select>
+        <input type="hidden" asp-for="Tipo" />
+    }
+    else
+    {
+        <select asp-for="Tipo" class="form-select" id="tipoSelect" asp-items="Html.GetEnumSelectList<TipoFuncionario>()"></select>
+    }
+    <span asp-validation-for="Tipo" class="text-danger"></span>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="Nome" class="form-label"></label>
+        <input asp-for="Nome" class="form-control" />
+        <span asp-validation-for="Nome" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="DataContratacao" class="form-label"></label>
+        <input asp-for="DataContratacao" class="form-control" />
+        <span asp-validation-for="DataContratacao" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="SalarioBase" class="form-label"></label>
+        <input asp-for="SalarioBase" class="form-control" />
+        <span asp-validation-for="SalarioBase" class="text-danger"></span>
+    </div>
+</div>
+
+<fieldset class="tipo-fields" data-tipo="Gerente">
+    <legend class="h6">Dados de Gerente</legend>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Bonus" class="form-label"></label>
+            <input asp-for="Bonus" class="form-control" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="TamanhoEquipe" class="form-label"></label>
+            <input asp-for="TamanhoEquipe" class="form-control" />
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="tipo-fields" data-tipo="Desenvolvedor">
+    <legend class="h6">Dados de Desenvolvedor</legend>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="NivelSenioridade" class="form-label"></label>
+            <select asp-for="NivelSenioridade" class="form-select" asp-items="Html.GetEnumSelectList<NivelSenioridade>()"></select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="CertificacoesQtd" class="form-label"></label>
+            <input asp-for="CertificacoesQtd" class="form-control" />
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="tipo-fields" data-tipo="Estagiario">
+    <legend class="h6">Dados de Estagiário</legend>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Instituicao" class="form-label"></label>
+            <input asp-for="Instituicao" class="form-control" />
+            @* A obrigatoriedade de Instituicao é condicional (só para Estagiario) e validada no controller,
+               não via DataAnnotations. Por isso o erro é lido direto do ModelState em vez de
+               asp-validation-for: esse helper gera um data-val client-side que o jQuery Unobtrusive
+               Validation reinicializa como "válido" no carregamento da página, apagando o erro do servidor. *@
+            @if (ViewData.ModelState["Instituicao"] is { } entry && entry.Errors.Count > 0)
+            {
+                <span class="text-danger">@entry.Errors[0].ErrorMessage</span>
+            }
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="AuxilioTransporte" class="form-label"></label>
+            <input asp-for="AuxilioTransporte" class="form-control" />
+        </div>
+    </div>
+</fieldset>
+
+<button type="submit" class="btn btn-primary">Salvar</button>
+<a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+
+@* Script inline (não em @@section): esta view é incluída como partial via Html.PartialAsync,
+   e @@section não é suportado dentro de partials. Como a tag vem depois dos elementos no HTML,
+   o DOM já está disponível quando ela executa, sem precisar de DOMContentLoaded. *@
+<script>
+    (function () {
+        const select = document.getElementById('tipoSelect');
+        const fieldsets = document.querySelectorAll('.tipo-fields');
+
+        function atualizarVisibilidade() {
+            // O value da option é o número do enum (0, 1, 2...); o texto visível é o nome ("Gerente" etc.),
+            // que é o mesmo valor usado em data-tipo de cada fieldset.
+            const tipoAtual = select.options[select.selectedIndex].text;
+            fieldsets.forEach(function (fieldset) {
+                fieldset.style.display = fieldset.dataset.tipo === tipoAtual ? '' : 'none';
+            });
+        }
+
+        select.addEventListener('change', atualizarVisibilidade);
+        atualizarVisibilidade();
+    })();
+</script>

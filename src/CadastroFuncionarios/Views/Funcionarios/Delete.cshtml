@@ -1,0 +1,29 @@
+@using CadastroFuncionarios.Models
+@model Funcionario
+
+@{
+    ViewData["Title"] = "Excluir funcionário";
+}
+
+<h1>Excluir funcionário</h1>
+
+<div class="alert alert-warning">Tem certeza que deseja excluir este funcionário?</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Nome</dt>
+    <dd class="col-sm-9">@Model.Nome</dd>
+
+    <dt class="col-sm-3">Cargo</dt>
+    <dd class="col-sm-9">@Model.Cargo</dd>
+
+    <dt class="col-sm-3">E-mail</dt>
+    <dd class="col-sm-9">@Model.Email</dd>
+
+    <dt class="col-sm-3">Salário total</dt>
+    <dd class="col-sm-9">@Model.CalcularSalarioTotal().ToString("C")</dd>
+</dl>
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit" class="btn btn-danger">Confirmar exclusão</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+</form>
